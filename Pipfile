@@ -8,6 +8,7 @@ flask = "*"
 python-dotenv =  "*"
 readmeai = "*"
 black = "*"
+pandas = "*"
 
 [dev-packages]
 

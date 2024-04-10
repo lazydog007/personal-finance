@@ -26,6 +26,26 @@ def create_table(conn, create_table_sql):
         print(e)
 
 
+def search_in_column(table_name: str, column_name: str, query: str):
+    conn = create_connection()
+    cursor = conn.cursor()
+    if column_name.endswith("id"):
+        sql_query = f"SELECT * FROM {table_name} WHERE {column_name} = ?"
+        cursor.execute(sql_query, (query,))
+    else:
+        sql_query = f"SELECT * FROM {table_name} WHERE {column_name} LIKE ?"
+        cursor.execute(sql_query, ("%" + query + "%",))
+
+    matching_rows = cursor.fetchall()
+
+    response = []
+    for row in matching_rows:
+        response.append(row)
+
+    conn.close()
+    return response
+
+
 # ================================ PELIGROSO ===========================
 def drop_table(table_name):
     conn = create_connection()
@@ -182,7 +202,6 @@ def get_all_table_data(table_name):
 
 
 # Update a row in a table by its id and id_type
-# Try to make it less generic
 def update_row_by_id(table_name, id_type, row_id, updated_details):
     conn = create_connection()
     cursor = conn.cursor()
@@ -196,6 +215,18 @@ def update_row_by_id(table_name, id_type, row_id, updated_details):
     values.append(row_id)  # Add order_id to the end of values list for the WHERE clause
 
     cursor.execute(sql_query, values)
+    conn.commit()
+    conn.close()
+
+
+def delete_row_by_id(table_name, id_type, row_id):
+    conn = create_connection()
+    cursor = conn.cursor()
+
+    sql_query = f"DELETE FROM {table_name} WHERE {id_type} = ?"
+
+    cursor.execute(sql_query, (row_id,))
+
     conn.commit()
     conn.close()
 

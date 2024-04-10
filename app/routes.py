@@ -16,7 +16,7 @@ def get_database():
     return jsonify(data)
 
 
-@data_blueprint.route("/user/database", methods=["GET"])
+@data_blueprint.route("/database/user", methods=["GET"])
 def get_database_by_user():
     table = request.args.get("table")
     user_id = request.args.get("user_id")
