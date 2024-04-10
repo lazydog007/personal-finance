@@ -2,6 +2,7 @@ from flask import Flask
 from app.config import load_configurations, configure_logging
 from .routes import data_blueprint
 from .services.transaction import transaction_blueprint
+from .services.budget import budget_blueprint
 
 
 def create_app():
@@ -14,5 +15,6 @@ def create_app():
     # Import and register blueprints, if any
     app.register_blueprint(data_blueprint)
     app.register_blueprint(transaction_blueprint)
+    app.register_blueprint(budget_blueprint)
 
     return app

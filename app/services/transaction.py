@@ -6,7 +6,6 @@ from app.database import (
     create_connection,
     delete_row_by_id,
     get_all_table_data,
-    get_user_all_table_data,
     search_in_column,
     update_row_by_id,
 )
@@ -32,9 +31,8 @@ def add_transaction():
     try:
         body = request.get_json()
 
-        transaction_id = str(
-            uuid.uuid4()
-        )  # Generate a unique transaction ID and convert it to a string
+        # Generate a unique transaction ID and convert it to a string
+        transaction_id = str(uuid.uuid4())
         account_id = body.get("account_id")
         user_id = body.get("user_id")
         transaction_type = body.get("transaction_type")
@@ -76,11 +74,11 @@ def add_transaction():
         return jsonify({"message": str(e)}), 500
 
 
-# Get all transactions from the database
-@transaction_blueprint.route("/transaction", methods=["GET"])
-def get_transactions():
+# Get all transactions users from the database
+@transaction_blueprint.route("/transaction/user/<user_id>", methods=["GET"])
+def get_transactions_user_id(user_id):
     try:
-        transactions = get_all_table_data("transactions")
+        transactions = search_in_column("transactions", "user_id", user_id)
         df = pd.DataFrame(transactions, columns=COLUMNS)
         transactions_df = df.to_dict("records")
 
@@ -147,6 +145,9 @@ def update_transaction(transaction_id):
             "transaction_date": transaction_date,
             "description": description,
         }
+
+        # Remove None values from the updated_details
+        updated_details = {k: v for k, v in updated_details.items() if v is not None}
 
         update_row_by_id(
             "transactions", "transaction_id", transaction_id, updated_details
