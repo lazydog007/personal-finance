@@ -1,0 +1,10 @@
+budget_id,user_id,category_id,amount,start_date,end_date
+"1a2b3c4d-5e6f-7g8h-9i0j","e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a","1a2b3c4d-5e6f-7g8h-9i0j",500.00,"2022-01-01","2022-12-31"
+"2b3c4d5e-6f7g-8h9i-0j1a","6a7f8c9a-e4f3-0b1b-4b3d-8e1a-6d1b8c4","2b3c4d5e-6f7g-8h9i-0j1a",1000.00,"2022-01-01","2022-12-31"
+"3c4d5e6f-7g8h-9i0j-1a2b","e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a","3c4d5e6f-7g8h-9i0j-1a2b",300.00,"2022-01-01","2022-12-31"
+"4d5e6f7g-8h9i-0j1a-2b3c","6a7f8c9a-e4f3-0b1b-4b3d-8e1a-6d1b8c4","4d5e6f7g-8h9i-0j1a-2b3c",800.00,"2022-01-01","2022-12-31"
+"5e6f7g8h-9i0j-1a2b-3c4d","e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a","5e6f7g8h-9i0j-1a2b-3c4d",600.00,"2022-01-01","2022-12-31"
+"6f7g8h9i-0j1a-2b3c-4d5e","6a7f8c9a-e4f3-0b1b-4b3d-8e1a-6d1b8c4","6f7g8h9i-0j1a-2b3c-4d5e",1200.00,"2022-01-01","2022-12-31"
+"7g8h9i0j-1a2b-3c4d-5e6f","e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a","7g8h9i0j-1a2b-3c4d-5e6f",400.00,"2022-01-01","2022-12-31"
+"8h9i0j1a-2b3c-4d5e","6a7f8c9a-e4f3-0b1b-4b3d-8e1a-6d1b8c4","8h9i0j1a-2b3c-4d5e",900.00,"2022-01-01","2022-12-31"
+"9i0j1a2b-3c4d-5e6f","e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a","9i0j1a2b-3c4d-5e6f",700.00,"2022-01-01","2022-12-31"

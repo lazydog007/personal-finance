@@ -1,0 +1,11 @@
+category_id,category_name,category_type,global,user_id
+"1a2b3c4d-5e6f-7g8h-9i0j","Groceries","Expense",False,"e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a"
+"2b3c4d5e-6f7g-8h9i-0j1a","Salary","Income",False,"6a7f8c9a-e4f3-0b1b-4b3d-8e1a-6d1b8c4"
+"3c4d5e6f-7g8h-9i0j-1a2b","Rent","Expense",False,"e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a"
+"4d5e6f7g-8h9i-0j1a-2b3c","Utilities","Expense",False,"6a7f8c9a-e4f3-0b1b-4b3d-8e1a-6d1b8c4"
+"5e6f7g8h-9i0j-1a2b","Bonus","Income",False,"e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a"
+"6f7g8h9i-0j1a-2b3c","Investment","Income",False,"6a7f8c9a-e4f3-0b1b-4b3d-8e1a-6d1b8c4"
+"7g8h9i0j-1a2b-3c4d","Shopping","Expense",False,"e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a"
+"8h9i0j1a-2b3c-4d5e","Gifts","Expense",False,"6a7f8c9a-e4f3-0b1b-4b3d-8e1a-6d1b8c4"
+"9i0j1a2b-3c4d-5e6f","Dining","Expense",False,"e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a"
+"0j1a2b3c-4d5e-6f7g","Investment","Expense",False,"6a7f8c9a-e4f3-0b1b-4b3d-8e1a-6d1b8c4"
