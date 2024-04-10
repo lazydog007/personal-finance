@@ -8,4 +8,3 @@ account_id,user_id,account_type,account_name,balance,created_at,last_updated
 "7g8h9i0j-1a2b-3c4d-5e6f","e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a","Savings","Savings Account 3",3000.00,"2022-01-13 22:00:00","2022-01-14 19:00:00"
 "8h9i0j1a-2b3c-4d5e-6f7g","6a7f8c9a-e4f3-0b1b-4b3d-8e1a-6d1b8c4","Checking","Checking Account 3",2500.00,"2022-01-15 00:00:00","2022-01-16 21:00:00"
 "9i0j1a2b-3c4d-5e6f-7g8h","e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a","Investment","Investment Account 3",8000.00,"2022-01-17 02:00:00","2022-01-18 23:00:00"
-"0j1a2b3c-4d5e-6f7g-8h9i","6a7f8c9a-e4f3-0b1b-4b3d-8e1a-6d1b8c4","S

@@ -1,3 +1,4 @@
+import csv
 import sqlite3
 from sqlite3 import Error
 
@@ -46,7 +47,6 @@ def drop_all_tables(database_file):
     conn.close()
 
 def create_tables(database_file):
-    
     sql_create_users_table = """ CREATE TABLE IF NOT EXISTS users (
                                         user_id TEXT PRIMARY KEY,
                                         email TEXT NOT NULL UNIQUE,
@@ -129,10 +129,38 @@ def create_tables(database_file):
     else:
         print("Error! cannot create the database connection.")
 
+
+def populate_table_from_csv(conn, table_name, csv_file):
+    with open(csv_file, 'r') as file:
+        csv_reader = csv.reader(file)
+        next(csv_reader)  # Skip header row if present
+        for row in csv_reader:
+            placeholders = ', '.join(['?'] * len(row))
+            sql = f"INSERT INTO {table_name} VALUES ({placeholders})"
+            conn.execute(sql, row)
+
+def populate_tables(database_file):
+  conn = sqlite3.connect(database_file)
+
+  tables = ['users', 'accounts', 'transactions', 'categories', 'budgets', 'savings_goals']
+  for table in tables:
+      csv_file = f"data/mock_{table}_data.csv"
+      print("\n")
+      print(f"table: {table}")
+      print(f"csv_file: {csv_file}")
+      print("\n")
+      populate_table_from_csv(conn, table, csv_file)
+
+  conn.commit()
+  print("Finished Populating")
+  conn.close()
+
 def main():
     database_file = "data/personal_finance_data.db"
     drop_all_tables(database_file)
     create_tables(database_file)
+    populate_tables(database_file)
+    
 
 if __name__ == '__main__':
     main()
