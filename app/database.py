@@ -1,12 +1,15 @@
+import argparse
 import csv
 import sqlite3
 from sqlite3 import Error
 
-def create_connection(db_file):
+DATABASE_FILE = "data/personal_finance_data.db"
+
+def create_connection():
     """ create a database connection to a SQLite database """
     conn = None
     try:
-        conn = sqlite3.connect(db_file)
+        conn = sqlite3.connect(DATABASE_FILE)
     except Error as e:
         print(e)
     return conn
@@ -21,8 +24,8 @@ def create_table(conn, create_table_sql):
         print(e)
 
 # ================================ PELIGROSO ===========================
-def drop_table(table_name, database_file):
-    conn = create_connection(database_file)
+def drop_table(table_name):
+    conn = create_connection()
     cursor = conn.cursor()
 
     cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
@@ -31,8 +34,8 @@ def drop_table(table_name, database_file):
     print(f"Table {table_name} is dead")
     conn.close()
 
-def drop_all_tables(database_file):
-    conn = create_connection(database_file)
+def drop_all_tables():
+    conn = create_connection()
     cursor = conn.cursor()
 
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
@@ -46,7 +49,7 @@ def drop_all_tables(database_file):
     print(f"All Tables are dead")
     conn.close()
 
-def create_tables(database_file):
+def create_tables():
     sql_create_users_table = """ CREATE TABLE IF NOT EXISTS users (
                                         user_id TEXT PRIMARY KEY,
                                         email TEXT NOT NULL UNIQUE,
@@ -85,7 +88,7 @@ def create_tables(database_file):
                                         category_id TEXT PRIMARY KEY,
                                         category_name TEXT NOT NULL,
                                         category_type TEXT NOT NULL,
-                                        global BOOLEAN NOT NULL,
+                                        custom BOOLEAN NOT NULL,
                                         user_id TEXT,
                                         FOREIGN KEY (user_id) REFERENCES users (user_id)
                                      );"""
@@ -114,7 +117,7 @@ def create_tables(database_file):
 
 
     # create a database connection
-    conn = create_connection(database_file)
+    conn = create_connection()
 
     # create tables
     if conn is not None:
@@ -129,7 +132,6 @@ def create_tables(database_file):
     else:
         print("Error! cannot create the database connection.")
 
-
 def populate_table_from_csv(conn, table_name, csv_file):
     with open(csv_file, 'r') as file:
         csv_reader = csv.reader(file)
@@ -139,28 +141,60 @@ def populate_table_from_csv(conn, table_name, csv_file):
             sql = f"INSERT INTO {table_name} VALUES ({placeholders})"
             conn.execute(sql, row)
 
-def populate_tables(database_file):
-  conn = sqlite3.connect(database_file)
+def populate_tables():
+  conn = create_connection()
 
   tables = ['users', 'accounts', 'transactions', 'categories', 'budgets', 'savings_goals']
   for table in tables:
       csv_file = f"data/mock_{table}_data.csv"
-      print("\n")
-      print(f"table: {table}")
-      print(f"csv_file: {csv_file}")
-      print("\n")
+      print(f"table being populated: {table}")
       populate_table_from_csv(conn, table, csv_file)
 
   conn.commit()
   print("Finished Populating")
   conn.close()
 
-def main():
-    database_file = "data/personal_finance_data.db"
-    drop_all_tables(database_file)
-    create_tables(database_file)
-    populate_tables(database_file)
-    
 
-if __name__ == '__main__':
-    main()
+#  Methods used by the services
+def get_all_table_data(table_name):
+    conn = create_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(f"SELECT * FROM {table_name}")
+    records = cursor.fetchall()
+
+    conn.close()
+
+    return records
+
+def get_user_all_table_data(table_name, user_id):
+    conn = create_connection()
+    cursor = conn.cursor()
+
+    if table_name == 'categories':
+        query = f"SELECT * FROM {table_name} WHERE user_id = ? OR custom = FALSE", (user_id,)
+    else:
+        query = f"SELECT * FROM {table_name} WHERE user_id = ?", (user_id,)
+    cursor.execute(*query)
+    records = cursor.fetchall()
+
+    conn.close()
+    return records
+
+def main(args):
+    if args.drop:
+        drop_all_tables()
+    if args.create:
+        create_tables()
+    if args.populate:
+        populate_tables()
+
+# usage: python database.py --drop --create --populate
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Manage database.')
+    parser.add_argument('--drop', action='store_true', help='Drop all tables.')
+    parser.add_argument('--create', action='store_true', help='Create all tables.')
+    parser.add_argument('--populate', action='store_true', help='Populate all tables.')
+    args = parser.parse_args()
+
+    main(args)
