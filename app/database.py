@@ -5,8 +5,9 @@ from sqlite3 import Error
 
 DATABASE_FILE = "data/personal_finance_data.db"
 
+
 def create_connection():
-    """ create a database connection to a SQLite database """
+    """create a database connection to a SQLite database"""
     conn = None
     try:
         conn = sqlite3.connect(DATABASE_FILE)
@@ -14,14 +15,16 @@ def create_connection():
         print(e)
     return conn
 
+
 def create_table(conn, create_table_sql):
-    """ create a table from the create_table_sql statement """
+    """create a table from the create_table_sql statement"""
     try:
         c = conn.cursor()
         c.execute(create_table_sql)
         print("table created")
     except Error as e:
         print(e)
+
 
 # ================================ PELIGROSO ===========================
 def drop_table(table_name):
@@ -34,6 +37,7 @@ def drop_table(table_name):
     print(f"Table {table_name} is dead")
     conn.close()
 
+
 def drop_all_tables():
     conn = create_connection()
     cursor = conn.cursor()
@@ -42,12 +46,13 @@ def drop_all_tables():
     tables = cursor.fetchall()
 
     for table in tables:
-        if table[0] != 'sqlite_sequence':
+        if table[0] != "sqlite_sequence":
             cursor.execute(f"DROP TABLE IF EXISTS {table[0]}")
 
     conn.commit()
     print(f"All Tables are dead")
     conn.close()
+
 
 def create_tables():
     sql_create_users_table = """ CREATE TABLE IF NOT EXISTS users (
@@ -115,7 +120,6 @@ def create_tables():
                                            FOREIGN KEY (user_id) REFERENCES users (user_id)
                                         );"""
 
-
     # create a database connection
     conn = create_connection()
 
@@ -132,27 +136,36 @@ def create_tables():
     else:
         print("Error! cannot create the database connection.")
 
+
 def populate_table_from_csv(conn, table_name, csv_file):
-    with open(csv_file, 'r') as file:
+    with open(csv_file, "r") as file:
         csv_reader = csv.reader(file)
         next(csv_reader)  # Skip header row if present
         for row in csv_reader:
-            placeholders = ', '.join(['?'] * len(row))
+            placeholders = ", ".join(["?"] * len(row))
             sql = f"INSERT INTO {table_name} VALUES ({placeholders})"
             conn.execute(sql, row)
 
+
 def populate_tables():
-  conn = create_connection()
+    conn = create_connection()
 
-  tables = ['users', 'accounts', 'transactions', 'categories', 'budgets', 'savings_goals']
-  for table in tables:
-      csv_file = f"data/mock_{table}_data.csv"
-      print(f"table being populated: {table}")
-      populate_table_from_csv(conn, table, csv_file)
+    tables = [
+        "users",
+        "accounts",
+        "transactions",
+        "categories",
+        "budgets",
+        "savings_goals",
+    ]
+    for table in tables:
+        csv_file = f"data/mock_{table}_data.csv"
+        print(f"table being populated: {table}")
+        populate_table_from_csv(conn, table, csv_file)
 
-  conn.commit()
-  print("Finished Populating")
-  conn.close()
+    conn.commit()
+    print("Finished Populating")
+    conn.close()
 
 
 #  Methods used by the services
@@ -167,12 +180,34 @@ def get_all_table_data(table_name):
 
     return records
 
+
+# Update a row in a table by its id and id_type
+# Try to make it less generic
+def update_row_by_id(table_name, id_type, row_id, updated_details):
+    conn = create_connection()
+    cursor = conn.cursor()
+
+    # Build the SQL query dynamically based on the fields provided in updated_details
+    set_clause = ", ".join([f"{key} = ?" for key in updated_details.keys()])
+    sql_query = f"UPDATE {table_name} SET {set_clause} WHERE {id_type} = ?"
+
+    # Prepare the values for the placeholders in the SQL query
+    values = list(updated_details.values())
+    values.append(row_id)  # Add order_id to the end of values list for the WHERE clause
+
+    cursor.execute(sql_query, values)
+    conn.commit()
+    conn.close()
+
+
 def get_user_all_table_data(table_name, user_id):
     conn = create_connection()
     cursor = conn.cursor()
 
-    if table_name == 'categories':
-        query = f"SELECT * FROM {table_name} WHERE user_id = ? OR custom = FALSE", (user_id,)
+    if table_name == "categories":
+        query = f"SELECT * FROM {table_name} WHERE user_id = ? OR custom = FALSE", (
+            user_id,
+        )
     else:
         query = f"SELECT * FROM {table_name} WHERE user_id = ?", (user_id,)
     cursor.execute(*query)
@@ -180,6 +215,7 @@ def get_user_all_table_data(table_name, user_id):
 
     conn.close()
     return records
+
 
 def main(args):
     if args.drop:
@@ -189,12 +225,13 @@ def main(args):
     if args.populate:
         populate_tables()
 
+
 # usage: python database.py --drop --create --populate
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Manage database.')
-    parser.add_argument('--drop', action='store_true', help='Drop all tables.')
-    parser.add_argument('--create', action='store_true', help='Create all tables.')
-    parser.add_argument('--populate', action='store_true', help='Populate all tables.')
+    parser = argparse.ArgumentParser(description="Manage database.")
+    parser.add_argument("--drop", action="store_true", help="Drop all tables.")
+    parser.add_argument("--create", action="store_true", help="Create all tables.")
+    parser.add_argument("--populate", action="store_true", help="Populate all tables.")
     args = parser.parse_args()
 
     main(args)
