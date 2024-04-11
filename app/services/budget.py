@@ -31,7 +31,7 @@ def add_budget():
         cursor.execute(
             """
             INSERT INTO budgets(budget_id, user_id, category_id, amount, start_date, end_date)
-            VALUES(?,?,?,?,?,?)
+            VALUES(%s, %s, %s, %s, %s, %s)
         """,
             (budget_id, user_id, category_id, amount, start_date, end_date),
         )

@@ -41,10 +41,10 @@ def search_in_column(table_name: str, column_name: str, query: str):
     conn = create_connection()
     cursor = conn.cursor()
     if column_name.endswith("id"):
-        sql_query = f"SELECT * FROM {table_name} WHERE {column_name} = ?"
+        sql_query = f"SELECT * FROM {table_name} WHERE {column_name} = %s"
         cursor.execute(sql_query, (query,))
     else:
-        sql_query = f"SELECT * FROM {table_name} WHERE {column_name} LIKE ?"
+        sql_query = f"SELECT * FROM {table_name} WHERE {column_name} LIKE %s"
         cursor.execute(sql_query, ("%" + query + "%",))
 
     matching_rows = cursor.fetchall()
@@ -251,8 +251,8 @@ def update_row_by_id(table_name, id_type, row_id, updated_details):
     cursor = conn.cursor()
 
     # Build the SQL query dynamically based on the fields provided in updated_details
-    set_clause = ", ".join([f"{key} = ?" for key in updated_details.keys()])
-    sql_query = f"UPDATE {table_name} SET {set_clause} WHERE {id_type} = ?"
+    set_clause = ", ".join([f"{key} = %s" for key in updated_details.keys()])
+    sql_query = f"UPDATE {table_name} SET {set_clause} WHERE {id_type} = %s"
 
     # Prepare the values for the placeholders in the SQL query
     values = list(updated_details.values())
@@ -267,7 +267,7 @@ def delete_row_by_id(table_name, id_type, row_id):
     conn = create_connection()
     cursor = conn.cursor()
 
-    sql_query = f"DELETE FROM {table_name} WHERE {id_type} = ?"
+    sql_query = f"DELETE FROM {table_name} WHERE {id_type} = %s"
 
     cursor.execute(sql_query, (row_id,))
 
@@ -284,7 +284,7 @@ def get_user_all_table_data(table_name, user_id):
             user_id,
         )
     else:
-        query = f"SELECT * FROM {table_name} WHERE user_id = ?", (user_id,)
+        query = f"SELECT * FROM {table_name} WHERE user_id = %s", (user_id,)
     cursor.execute(*query)
     records = cursor.fetchall()
 

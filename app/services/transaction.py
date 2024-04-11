@@ -48,7 +48,7 @@ def add_transaction():
         cursor.execute(
             """
             INSERT INTO transactions(transaction_id, account_id, user_id, transaction_type, amount, category_id, transaction_date, description, created_at)
-            VALUES(?,?,?,?,?,?,?,?,?)
+            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """,
             (
                 transaction_id,
