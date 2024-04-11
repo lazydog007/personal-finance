@@ -1,4 +1,0 @@
-account_id,user_id,account_type,account_name,balance,created_at,last_updated
-"9436be67-8f4a-4720-b153-d820540869fc","e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a","Savings","Savings Account 1",1000.00,"2022-01-01 12:00:00","2022-01-02 08:00:00"
-"5d9ad6c3-19d8-4a2d-bb89-071b8e6ac44d","e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a","Investment","Investment Account 1",7500.00,"2022-01-05 14:00:00","2022-01-06 11:00:00"
-"9462a2e5-0d9b-4ad4-96bc-857235199e7a","e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a","Checking","Checking Account 2",1500.00,"2022-01-09 18:00:00","2022-01-10 15:00:00"
