@@ -1,0 +1,13 @@
+category_id,category_name,category_type,custom,user_id
+"fc6c9ff0-2d46-43bb-a469-17f1dc90a3b1","Groceries","Expense",0,
+"e452afad-2f1a-4ed0-88f7-d74e45b50ba6","Salary","Income","0",
+"f325ac02-09e3-4349-8db1-0f6e161420c7","Rent","Expense",0,
+"8cfb3db9-e54a-4af1-94a9-64d68f6bde2b","Utilities","Expense",0,
+"273dfdc5-8d23-4f92-bcd4-7cc268640a42","Bonus","Income",0,
+"6b195168-d4e9-472c-a84e-86a187a4762d","Investment","Income",0,
+"5ef1d585-7ef0-42b1-bb76-51820c786dfb","Shopping","Expense",0,
+"b364d066-778f-44bb-bd64-28af0d95d35c","Gifts","Expense",0,
+"8efc0fe5-b542-4643-bb67-3157404c7b60","Dining","Expense",0,
+"32f07cac-b6a0-478e-9440-26fa806b5c9c","Custom1","Income",1,"e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a"
+"d0e50e6c-e96e-41db-ab4d-b40879f25a76","Custom2","Expense",1,"e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a"
+"74f51008-ba4f-4b53-8589-c70b69805f96","Custom3","Expense",1,"e4f3b8c4-0b1b-4b3d-8e1a-6d1b6a7f8c9a"
