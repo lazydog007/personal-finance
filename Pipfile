@@ -9,6 +9,7 @@ python-dotenv =  "*"
 readmeai = "*"
 black = "*"
 pandas = "*"
+numpy = "*"
 
 [dev-packages]
 
