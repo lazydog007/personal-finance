@@ -10,8 +10,9 @@ readmeai = "*"
 black = "*"
 pandas = "*"
 numpy = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.09"
+python_version = "3.9"

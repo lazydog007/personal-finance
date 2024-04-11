@@ -1,17 +1,29 @@
 import argparse
 import csv
-import sqlite3
-from sqlite3 import Error
+import os
+from dotenv import load_dotenv
 
-DATABASE_FILE = "data/personal_finance_data.db"
+import psycopg2
+
+load_dotenv()  # take environment variables from .env.
+
+conn_url = os.getenv("DATABASE_URL")
+print(conn_url)
 
 
 def create_connection():
-    """create a database connection to a SQLite database"""
+    """create a database connection to a PostgreSQL database"""
     conn = None
     try:
-        conn = sqlite3.connect(DATABASE_FILE)
-    except Error as e:
+        conn = psycopg2.connect(conn_url)
+        cursor = conn.cursor()
+        # Execute a sample query
+        cursor.execute("SELECT version();")
+
+        # Fetch and print the result
+        db_version = cursor.fetchone()
+        print("PostgreSQL database version:", db_version)
+    except psycopg2.Error as e:
         print(e)
     return conn
 
@@ -21,8 +33,7 @@ def create_table(conn, create_table_sql):
     try:
         c = conn.cursor()
         c.execute(create_table_sql)
-        print("table created")
-    except Error as e:
+    except psycopg2.Error as e:
         print(e)
 
 
@@ -62,16 +73,44 @@ def drop_all_tables():
     conn = create_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    cursor.execute(
+        "SELECT table_name FROM information_schema.tables WHERE table_schema='public'"
+    )
     tables = cursor.fetchall()
 
     for table in tables:
-        if table[0] != "sqlite_sequence":
-            cursor.execute(f"DROP TABLE IF EXISTS {table[0]}")
+        cursor.execute(f"DROP TABLE IF EXISTS {table[0]}")
 
     conn.commit()
     print(f"All Tables are dead")
     conn.close()
+
+
+def force_drop_all_tables():
+    try:
+        conn = create_connection()
+        cursor = conn.cursor()
+
+        # Get all table names in the current schema
+        cursor.execute(
+            "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';"
+        )
+
+        table_names = cursor.fetchall()
+
+        # Drop each table with CASCADE option to drop dependencies
+        for table_name in table_names:
+            cursor.execute(f"DROP TABLE IF EXISTS {table_name[0]} CASCADE;")
+            print(f"Force dropped table: {table_name[0]}")
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+        print("All tables force dropped successfully!")
+
+    except psycopg2.Error as e:
+        conn.rollback()
+        print("Error force dropping tables:", e)
 
 
 def create_tables():
@@ -94,6 +133,14 @@ def create_tables():
                                       FOREIGN KEY (user_id) REFERENCES users (user_id)
                                    );"""
 
+    sql_create_categories_table = """CREATE TABLE IF NOT EXISTS categories (
+                                        category_id TEXT PRIMARY KEY,
+                                        category_name TEXT NOT NULL,
+                                        category_type TEXT NOT NULL,
+                                        custom BOOLEAN NOT NULL,
+                                        user_id TEXT
+                                     );"""
+
     sql_create_transactions_table = """CREATE TABLE IF NOT EXISTS transactions (
                                           transaction_id TEXT PRIMARY KEY,
                                           account_id TEXT NOT NULL,
@@ -109,15 +156,6 @@ def create_tables():
                                           FOREIGN KEY (category_id) REFERENCES categories (category_id)
                                        );"""
 
-    sql_create_categories_table = """CREATE TABLE IF NOT EXISTS categories (
-                                        category_id TEXT PRIMARY KEY,
-                                        category_name TEXT NOT NULL,
-                                        category_type TEXT NOT NULL,
-                                        custom BOOLEAN NOT NULL,
-                                        user_id TEXT,
-                                        FOREIGN KEY (user_id) REFERENCES users (user_id)
-                                     );"""
-
     sql_create_budgets_table = """CREATE TABLE IF NOT EXISTS budgets (
                                      budget_id TEXT PRIMARY KEY,
                                      user_id TEXT NOT NULL,
@@ -125,7 +163,6 @@ def create_tables():
                                      amount REAL NOT NULL,
                                      start_date DATE NOT NULL,
                                      end_date DATE NOT NULL,
-                                     FOREIGN KEY (user_id) REFERENCES users (user_id),
                                      FOREIGN KEY (category_id) REFERENCES categories (category_id)
                                   );"""
 
@@ -146,11 +183,17 @@ def create_tables():
     # create tables
     if conn is not None:
         create_table(conn, sql_create_users_table)
+        print("users table created")
         create_table(conn, sql_create_accounts_table)
-        create_table(conn, sql_create_transactions_table)
+        print("accounts table created")
         create_table(conn, sql_create_categories_table)
+        print("categories table created")
+        create_table(conn, sql_create_transactions_table)
+        print("transactions table created")
         create_table(conn, sql_create_budgets_table)
+        print("budgest table created")
         create_table(conn, sql_create_savings_goals_table)
+        print("savings table created")
         conn.commit()
         conn.close()
     else:
@@ -160,11 +203,13 @@ def create_tables():
 def populate_table_from_csv(conn, table_name, csv_file):
     with open(csv_file, "r") as file:
         csv_reader = csv.reader(file)
-        next(csv_reader)  # Skip header row if present
+        columns = next(csv_reader)  # Assume header row is present
+        cursor = conn.cursor()
         for row in csv_reader:
-            placeholders = ", ".join(["?"] * len(row))
-            sql = f"INSERT INTO {table_name} VALUES ({placeholders})"
-            conn.execute(sql, row)
+            placeholders = ", ".join(["%s"] * len(row))
+            sql = f"INSERT INTO {table_name} ({', '.join(columns)}) VALUES ({placeholders})"
+            cursor.execute(sql, row)
+        conn.commit()
 
 
 def populate_tables():
@@ -173,8 +218,8 @@ def populate_tables():
     tables = [
         "users",
         "accounts",
-        "transactions",
         "categories",
+        "transactions",
         "budgets",
         "savings_goals",
     ]
@@ -183,7 +228,6 @@ def populate_tables():
         print(f"table being populated: {table}")
         populate_table_from_csv(conn, table, csv_file)
 
-    conn.commit()
     print("Finished Populating")
     conn.close()
 
@@ -251,6 +295,8 @@ def get_user_all_table_data(table_name, user_id):
 def main(args):
     if args.drop:
         drop_all_tables()
+    if args.fdrop:
+        force_drop_all_tables()
     if args.create:
         create_tables()
     if args.populate:
@@ -261,6 +307,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Manage database.")
     parser.add_argument("--drop", action="store_true", help="Drop all tables.")
+    parser.add_argument("--fdrop", action="store_true", help="Force drop all tables.")
     parser.add_argument("--create", action="store_true", help="Create all tables.")
     parser.add_argument("--populate", action="store_true", help="Populate all tables.")
     args = parser.parse_args()
